@@ -1,0 +1,27 @@
+{
+  "name": "BE_DO_AN_CHUYEN_NGANH",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "lint" : "eslint .",
+    "dev": " nodemon --exec babel-node ./src/server.js"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.25.7",
+    "@babel/core": "^7.25.8",
+    "@babel/node": "^7.25.7",
+    "@babel/preset-env": "^7.25.8",
+    "babel-node": "^0.0.1-security",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "http-status-code": "^2.1.0",
+    "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^9.12.0"
+  }
+}
