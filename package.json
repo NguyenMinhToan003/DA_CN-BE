@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "description": "Node version 18.18.0",
   "scripts": {
-    "lint" : "eslint .",
+    "lint": "eslint .",
     "dev": " nodemon --exec babel-node ./src/server.js"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "http-status-code": "^2.1.0",
+    "mongodb": "^6.10.0",
     "nodemon": "^3.1.7"
   },
   "devDependencies": {
