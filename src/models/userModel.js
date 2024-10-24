@@ -7,7 +7,7 @@ const USER_SCHEMA = Joi.object({
   password: Joi.string().required(),
   gender: Joi.boolean().required(),
   birth: Joi.date().required(),
-  class: Joi.string().required().min(3).max(7),
+  class: Joi.string().required().min(0).max(7),
   phone: Joi.string().required().pattern().messages({}),
   address: Joi.string().required().min(5).max(100),
   profile_picture: Joi.string().required(),
