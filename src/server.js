@@ -1,16 +1,45 @@
 import express from 'express'
 import { CONNECT_DB, GET_DB } from './configs/mongodb'
 import 'dotenv/config'
+import cors from 'cors'
+import http from 'http'
+import { Server } from 'socket.io'
 import { APIs_v1 } from './routes/v1'
-const app = express()
+import 'dotenv/config'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import { socket } from './socket/socket'
 
-app.use('/api/v1', APIs_v1)
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const START_SERVER = () => {
+  const app = express()
+  const server = http.createServer(app)
+  app.use(cors())
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(cookieParser())
+  app.use('/api/v1', APIs_v1)
+  // lang nghe socket
+  const io = new Server(server, {
+    cors: {
+      origin: `${process.env.APP_PORT}`
+    }
+  })
+  // cac ham xu ly socket
+  socket(io)
+  // bat dau lang nghe port cua server(phai chay truoc khi lang nghe socket) khong phai app.listen
+  server.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`)
+  })
+}
 
-app.listen(process.env.PORT, async () => {
-  await CONNECT_DB()
-  await GET_DB()
-  console.log(`Server is running on ${process.env.PORT}`)
-})
+
+(async () => {
+  try {
+    await CONNECT_DB()
+    START_SERVER()
+    await GET_DB()
+  }
+  catch (error) {
+    console.log('Error when starting server: ', error)
+  }
+})()
