@@ -21,7 +21,8 @@
     "express": "^4.21.1",
     "http-status-code": "^2.1.0",
     "mongodb": "^6.10.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "socket.io": "4.7.5"
   },
   "devDependencies": {
     "eslint": "^9.12.0"
