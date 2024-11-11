@@ -7,8 +7,8 @@ const resourceSchema = Joi.object({
   note: Joi.string().required(),
   week: Joi.number().required(),
   topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
-  created_at: Joi.date().timestamp().required(),
-  updated_at: Joi.date().timestamp().required()
+  createdAt: Joi.date().timestamp().default(Date.now()),
+  updatedAt: Joi.date().timestamp().default(Date.now())
 })
 export const resourceModel = {
   RESOURCE_COLLECTION,

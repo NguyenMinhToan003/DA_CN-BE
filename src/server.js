@@ -18,6 +18,7 @@ const START_SERVER = () => {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(cookieParser())
   app.use('/api/v1', APIs_v1)
+
   // lang nghe socket
   const io = new Server(server, {
     cors: {
@@ -32,12 +33,12 @@ const START_SERVER = () => {
   })
 }
 
-
 (async () => {
   try {
     await CONNECT_DB()
     START_SERVER()
     await GET_DB()
+    console.log('Connected to database successfully')
   }
   catch (error) {
     console.log('Error when starting server: ', error)
