@@ -17,8 +17,7 @@ export const CONNECT_DB = async () => {
   console.log('Connected to database >>>>')
 }
 export const GET_DB = () => {
-  if (!getData) throw new Error('Missing connect database!!!')
-  console.log('Get database successfully!!!')
+  if (!getData) console.error('Missing connect database!!!')
   return getData
 }
 export const CLOSE_DB = async () => {
