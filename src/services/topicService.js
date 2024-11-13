@@ -1,23 +1,16 @@
-import { studentModel } from '../models/StudentModel'
 import { topicModel } from '../models/TopicModel'
 
 const createTopic = async (data) => {
+  // da tao va join topic sinh vien vao topic
   try {
     const dataTopic = {
       name: data.name,
       description: data.description,
       tech: data.tech
     }
-    const dataStudentChange = {
-      _id: data.studentId,
-      topicId: null,
-      updateAt: new Date()
-    }
-    const topic = await topicModel.create(dataStudentChange._id, dataTopic)
-    //! them topicId vao dataStudent
-    dataStudentChange.topicId = topic.insertedId
-    const student = await studentModel.student_topic(dataStudentChange._id, dataStudentChange)
-    return { ...topic, ...student }
+
+    const topic = await topicModel.create(data.studentId, dataTopic)
+    return { ...topic }
   }
   catch (error) {
     throw error
@@ -28,10 +21,18 @@ const joinTopic = async (data) => {
     const _id = data.studentId
     data = {
       topicId: data.topicId,
-      updateAt: new Date()
+      updatedAt: Date.now()
     }
-    return await studentModel.student_topic(_id, data)
+    return await topicModel.student_topic(_id, data)
 
+  }
+  catch (error) {
+    throw error
+  }
+}
+const getTopicById = async (id) => {
+  try {
+    return await topicModel.findTopicById(id)
   }
   catch (error) {
     throw error
@@ -39,5 +40,6 @@ const joinTopic = async (data) => {
 }
 export const topicService = {
   createTopic,
-  joinTopic
+  joinTopic,
+  getTopicById
 }

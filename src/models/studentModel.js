@@ -55,10 +55,10 @@ const register = async (data) => {
     throw error
   }
 }
-const student_teacher = async (data) => {
+const student_teacher = async (id, data) => {
   try {
     const user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
-      { _id: new ObjectId(data._id) }
+      { _id: new ObjectId(id) }
     )
     if (!user) {
       return { message: 'Sinh viên không tồn tại' }
@@ -99,46 +99,11 @@ const findStudentById = async (id) => {
     throw error
   }
 }
-const student_topic = async (id, data) => {
-  try {
-
-    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
-      { _id: new ObjectId(id) }
-    )
-    if (!user)
-      return { message: 'Sinh viên không tồn tại' }
-
-    if (user.topicId)
-      return { message: 'Sinh viên đã chọn đề tài' }
-
-    const topic = await GET_DB().collection(topicModel.TOPIC_COLLECTION).findOne(
-      { _id: new ObjectId(data.topicId) }
-    )
-
-    if (!topic)
-      return { message: 'Đề tài không tồn tại' }
-
-    const result = await GET_DB().collection(STUDENT_COLLECTION).updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          topicId: new ObjectId(data.topicId),
-          updatedAt: data.updatedAt
-        }
-      }
-    )
-    return { ...result, message: 'Chọn đề tài thành công' }
-  }
-  catch (error) {
-    throw error
-  }
-}
 export const studentModel = {
   STUDENT_COLLECTION,
   studentSchema,
   login,
   register,
-  student_teacher,
   findStudentById,
-  student_topic
+  student_teacher
 }

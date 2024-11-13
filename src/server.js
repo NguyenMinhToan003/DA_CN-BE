@@ -1,7 +1,7 @@
 import express from 'express'
 import { CONNECT_DB, GET_DB } from './configs/mongodb'
 import 'dotenv/config'
-import cors from 'cors'
+import { corsMiddleware } from './configs/cors'
 import http from 'http'
 import { Server } from 'socket.io'
 import { APIs_v1 } from './routes/v1'
@@ -13,7 +13,7 @@ import { socket } from './socket/socket'
 const START_SERVER = () => {
   const app = express()
   const server = http.createServer(app)
-  app.use(cors())
+  app.use(corsMiddleware)
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(cookieParser())

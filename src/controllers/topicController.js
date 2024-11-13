@@ -3,7 +3,7 @@ import { topicService } from '../services/topicService'
 
 const createTopic = async (req, res, next) => {
   try {
-    const { name, description, tech, studentId } = req.query
+    const { name, description, tech, studentId } = req.body
     const data = {
       name,
       description,
@@ -22,7 +22,7 @@ const createTopic = async (req, res, next) => {
 }
 const joinTopic = async (req, res, next) => {
   try {
-    const { topicId, studentId } = req.query
+    const { topicId, studentId } = req.body
     const data = {
       topicId,
       studentId
@@ -37,7 +37,18 @@ const joinTopic = async (req, res, next) => {
     throw error
   }
 }
+const getTopicById = async (req, res) => {
+  try {
+    const { id } = req.query
+    const result = await topicService.getTopicById(id)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const topicController = {
   createTopic,
-  joinTopic
+  joinTopic,
+  getTopicById
 }
