@@ -4,8 +4,9 @@ import { topicController } from '../../controllers/topicController'
 const Router = express.Router()
 
 Router.route('/create')
-  .get(topicValidation.createTopic, topicController.createTopic)
+  .post(topicValidation.createTopic, topicController.createTopic)
 Router.route('/join-topic')
-  .get(topicValidation.joinTopic, topicController.joinTopic)
-
+  .post(topicValidation.joinTopic, topicController.joinTopic)
+Router.route('/detai?:id')
+  .get(topicValidation.getTopicById, topicController.getTopicById)
 export const topicRoute = Router

@@ -9,7 +9,7 @@ const createTopic = async (req, res, next) => {
     studentId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
   })
   try {
-    await schema.validateAsync(req.query, { abortEarly: false })
+    await schema.validateAsync(req.body, { abortEarly: false })
     next()
   }
   catch (error) {
@@ -22,6 +22,18 @@ const joinTopic = async (req, res, next) => {
     studentId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
   }
   try {
+    await Joi.object(schema).validateAsync(req.body, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+  }
+}
+const getTopicById = async (req, res, next) => {
+  const schema = {
+    id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+  }
+  try {
     await Joi.object(schema).validateAsync(req.query, { abortEarly: false })
     next()
   }
@@ -31,5 +43,6 @@ const joinTopic = async (req, res, next) => {
 }
 export const topicValidation = {
   createTopic,
-  joinTopic
+  joinTopic,
+  getTopicById
 }

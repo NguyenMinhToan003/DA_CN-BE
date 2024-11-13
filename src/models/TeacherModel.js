@@ -46,10 +46,18 @@ const register = async (data) => {
     throw error
   }
 }
-
+const getTeachers = async () => {
+  try {
+    return await GET_DB().collection(TEACHER_COLLECTION).find().toArray()
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const teacherModel = {
   TEACHER_COLLECTION,
   teacherSchema,
   login,
-  register
+  register,
+  getTeachers
 }
