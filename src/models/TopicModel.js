@@ -87,10 +87,44 @@ const student_topic = async (id, data) => {
     throw error
   }
 }
+const findTopicByTeacherId = async (id) => {
+  try {
+    const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).find(
+      { teacherId: new ObjectId(id) }
+    ).toArray()
+    const topicIds = students.map(student => new ObjectId(student.topicId))
+    const topics = await GET_DB().collection(TOPIC_COLLECTION).find(
+      { _id: { $in: topicIds } }
+    ).toArray()
+    return topics
+  }
+  catch (error) {
+    throw error
+  }
+}
+const confirmTopic = async (ids) => {
+  try {
+    const result = await GET_DB().collection(TOPIC_COLLECTION).updateMany(
+      { _id: { $in: ids.map(id => new ObjectId(id)) } },
+      {
+        $set: {
+          process: 1,
+          updatedAt: Date.now()
+        }
+      }
+    )
+    return result
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const topicModel = {
   TOPIC_COLLECTION,
   topicSchema,
   create,
   findTopicById,
-  student_topic
+  student_topic,
+  findTopicByTeacherId,
+  confirmTopic
 }

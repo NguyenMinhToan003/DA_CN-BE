@@ -23,7 +23,19 @@ const student_teacher = async (req, res, next) => {
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
   })
   try {
-    console.log(req.query)
+
+    await schema.validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+  }
+}
+const getStudentsByTeacherId = async (req, res, next) => {
+  const schema = Joi.object({
+    id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+  })
+  try {
     await schema.validateAsync(req.query, { abortEarly: false })
     next()
   }
@@ -33,5 +45,6 @@ const student_teacher = async (req, res, next) => {
 }
 export const studentValidation = {
   student_topic,
-  student_teacher
+  student_teacher,
+  getStudentsByTeacherId
 }

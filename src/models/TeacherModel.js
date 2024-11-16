@@ -1,6 +1,8 @@
 import Joi from 'joi'
 import bcrypt from 'bcrypt'
 import { GET_DB } from '../configs/mongodb'
+import { studentModel } from './StudentModel'
+import { ObjectId } from 'mongodb'
 const TEACHER_COLLECTION = 'teachers'
 const teacherSchema = Joi.object({
   name: Joi.string().required(),
@@ -54,10 +56,30 @@ const getTeachers = async () => {
     throw error
   }
 }
+const confirmStudents = async (id, studentIds) => {
+  try {
+    const teacher = await GET_DB().collection(TEACHER_COLLECTION).findOne({ _id: new ObjectId(id) })
+    if (!teacher) return { message: 'Giáo viên không tồn tại' }
+    const result = await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
+      { _id: { $in: studentIds.map(id => new ObjectId(id)) } },
+      {
+        $set: {
+          status: 1,
+          updatedAt: Date.now()
+        }
+      }
+    )
+    return result
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const teacherModel = {
   TEACHER_COLLECTION,
   teacherSchema,
   login,
   register,
-  getTeachers
+  getTeachers,
+  confirmStudents
 }

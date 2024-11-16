@@ -9,6 +9,15 @@ const getTeachers = async () => {
     throw error
   }
 }
+const confirmStudents = async (id, studentIds) => {
+  try {
+    return await teacherModel.confirmStudents(id, studentIds)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const teacherService = {
-  getTeachers
+  getTeachers,
+  confirmStudents
 }

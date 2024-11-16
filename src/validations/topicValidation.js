@@ -41,8 +41,34 @@ const getTopicById = async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
   }
 }
+const getTopicByTeacherId = async (req, res, next) => {
+  const schema = {
+    id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+  }
+  try {
+    await Joi.object(schema).validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+  }
+}
+const confirmTopic = async (req, res, next) => {
+  const schema = {
+    ids: Joi.array().items(Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)).required().min(1)
+  }
+  try {
+    await Joi.object(schema).validateAsync(req.body, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+  }
+}
 export const topicValidation = {
   createTopic,
   joinTopic,
-  getTopicById
+  getTopicById,
+  getTopicByTeacherId,
+  confirmTopic
 }

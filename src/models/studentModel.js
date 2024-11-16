@@ -15,6 +15,7 @@ const studentSchema = Joi.object({
   CLASS: Joi.string().required(),
   teacherId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).default(null),
   topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).default(null),
+  status: Joi.number().default(0),
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(Date.now())
 })
@@ -63,6 +64,9 @@ const student_teacher = async (id, data) => {
     if (!user) {
       return { message: 'Sinh viên không tồn tại' }
     }
+    if (user.status === 1) {
+      return { message: 'Giáo viên đã xác nhận' }
+    }
     const teacher = await GET_DB().collection(teacherModel.TEACHER_COLLECTION).findOne(
       { _id: new ObjectId(data.teacherId) }
     )
@@ -99,11 +103,36 @@ const findStudentById = async (id) => {
     throw error
   }
 }
+const getStudentsByTeacherId = async (id) => {
+  try {
+    const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
+      {
+        $match: {
+          teacherId: new ObjectId(id)
+        }
+      },
+      {
+        $lookup: {
+          from: topicModel.TOPIC_COLLECTION,
+          localField: 'topicId',
+          foreignField: '_id',
+          as: 'topic'
+        }
+      }
+    ])
+      .toArray()
+    return students
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const studentModel = {
   STUDENT_COLLECTION,
   studentSchema,
   login,
   register,
   findStudentById,
-  student_teacher
+  student_teacher,
+  getStudentsByTeacherId
 }
