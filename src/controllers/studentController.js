@@ -34,8 +34,19 @@ const student_teacher = async (req, res) => {
     throw error
   }
 }
+const getStudentsByTeacherId = async (req, res) => {
+  try {
+    const { id } = req.query
+    const result = await studentService.getStudentsByTeacherId(id)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
 
 export const studentController = {
   student_topic,
-  student_teacher
+  student_teacher,
+  getStudentsByTeacherId
 }
