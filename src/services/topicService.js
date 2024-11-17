@@ -16,15 +16,9 @@ const createTopic = async (data) => {
     throw error
   }
 }
-const joinTopic = async (data) => {
+const joinTopic = async (topicId, studentIds) => {
   try {
-    const _id = data.studentId
-    data = {
-      topicId: data.topicId,
-      updatedAt: Date.now()
-    }
-    return await topicModel.student_topic(_id, data)
-
+    return await topicModel.student_topic(topicId, studentIds)
   }
   catch (error) {
     throw error
@@ -46,9 +40,9 @@ const getTopicByTeacherId = async (id) => {
     throw error
   }
 }
-const confirmTopic = async (ids) => {
+const confirmTopic = async (teacherId, ids) => {
   try {
-    return await topicModel.confirmTopic(ids)
+    return await topicModel.confirmTopic(teacherId, ids)
   }
   catch (error) {
     throw error
