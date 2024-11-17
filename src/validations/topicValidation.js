@@ -19,7 +19,7 @@ const createTopic = async (req, res, next) => {
 const joinTopic = async (req, res, next) => {
   const schema = {
     topicId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
-    studentId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+    studentIds: Joi.array().items(Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)).required().min(1)
   }
   try {
     await Joi.object(schema).validateAsync(req.body, { abortEarly: false })
@@ -55,6 +55,7 @@ const getTopicByTeacherId = async (req, res, next) => {
 }
 const confirmTopic = async (req, res, next) => {
   const schema = {
+    teacherId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
     ids: Joi.array().items(Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)).required().min(1)
   }
   try {

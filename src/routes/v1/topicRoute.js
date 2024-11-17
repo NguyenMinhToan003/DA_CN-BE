@@ -5,7 +5,7 @@ const Router = express.Router()
 
 Router.route('/create')
   .post(topicValidation.createTopic, topicController.createTopic)
-Router.route('/join-topic')
+Router.route('/join')
   .post(topicValidation.joinTopic, topicController.joinTopic)
 Router.route('/detail?:id')
   .get(topicValidation.getTopicById, topicController.getTopicById)

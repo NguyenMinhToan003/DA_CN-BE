@@ -22,16 +22,12 @@ const createTopic = async (req, res) => {
 }
 const joinTopic = async (req, res) => {
   try {
-    const { topicId, studentId } = req.body
-    const data = {
-      topicId,
-      studentId
-    }
-    const result = await topicService.joinTopic(data)
-    if (result.modifiedCount !== 1) {
+    const { topicId, studentIds } = req.body
+    const result = await topicService.joinTopic(topicId, studentIds)
+    if (result.acknowledged === false) {
       return res.status(StatusCodes.BAD_REQUEST).json(result)
     }
-    return res.status(StatusCodes.CREATED).json(result)
+    return res.status(StatusCodes.OK).json(result)
   }
   catch (error) {
     throw error
@@ -59,8 +55,8 @@ const getTopicByTeacherId = async (req, res) => {
 }
 const confirmTopic = async (req, res) => {
   try {
-    const { ids } = req.body
-    const result = await topicService.confirmTopic(ids)
+    const { ids, teacherId } = req.body
+    const result = await topicService.confirmTopic(teacherId, ids)
     return res.status(StatusCodes.OK).json(result)
   }
   catch (error) {
