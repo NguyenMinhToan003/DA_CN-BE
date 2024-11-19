@@ -40,9 +40,34 @@ const getTopicByTeacherId = async (id) => {
     throw error
   }
 }
-const confirmTopic = async (teacherId, ids) => {
+const confirmTopic = async (teacherId, topicId) => {
   try {
-    return await topicModel.confirmTopic(teacherId, ids)
+    return await topicModel.confirmTopic(teacherId, topicId)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const createEmptyTopic = async (teacherId, studentId) => {
+  try {
+    return await topicModel.createEmptyTopic(teacherId, studentId)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const getDetailTopicById = async (id) => {
+  try {
+    return await topicModel.getDetailTopicById(id)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const updateTopic = async (teacherId, topicId, data) => {
+  try {
+
+    return await topicModel.updateTopic(teacherId, topicId, data)
   }
   catch (error) {
     throw error
@@ -53,5 +78,8 @@ export const topicService = {
   joinTopic,
   getTopicById,
   getTopicByTeacherId,
-  confirmTopic
+  confirmTopic,
+  createEmptyTopic,
+  getDetailTopicById,
+  updateTopic
 }

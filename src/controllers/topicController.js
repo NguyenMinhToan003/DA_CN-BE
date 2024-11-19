@@ -55,8 +55,44 @@ const getTopicByTeacherId = async (req, res) => {
 }
 const confirmTopic = async (req, res) => {
   try {
-    const { ids, teacherId } = req.body
-    const result = await topicService.confirmTopic(teacherId, ids)
+    const { topicId, teacherId } = req.body
+    const result = await topicService.confirmTopic(teacherId, topicId)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const createEmptyTopic = async (req, res) => {
+  try {
+    const { studentId, teacherId } = req.body
+    const result = await topicService.createEmptyTopic(teacherId, studentId)
+    return res.status(StatusCodes.CREATED).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const getDetailTopicById = async (req, res) => {
+  try {
+    const { id } = req.query
+    const result = await topicService.getDetailTopicById(id)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const updateTopic = async (req, res) => {
+  try {
+    const { name, description, tech, process, id, teacherId } = req.body
+    const data = {
+      name,
+      description,
+      tech,
+      process
+    }
+    const result = await topicService.updateTopic(teacherId, id, data)
     return res.status(StatusCodes.OK).json(result)
   }
   catch (error) {
@@ -68,5 +104,8 @@ export const topicController = {
   joinTopic,
   getTopicById,
   getTopicByTeacherId,
-  confirmTopic
+  confirmTopic,
+  createEmptyTopic,
+  getDetailTopicById,
+  updateTopic
 }
