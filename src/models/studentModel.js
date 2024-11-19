@@ -7,6 +7,7 @@ import { teacherModel } from './teacherModel'
 import { topicModel } from './TopicModel'
 const STUDENT_COLLECTION = 'students'
 const studentSchema = Joi.object({
+  _id: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
   name: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
@@ -19,6 +20,9 @@ const studentSchema = Joi.object({
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(Date.now())
 })
+const NOSUBMITFIELD = {
+  password: 0
+}
 const comparePassword = async (password, hash) => {
   return await bcrypt.compare(password, hash)
 }
@@ -92,7 +96,8 @@ const student_teacher = async (id, data) => {
 const findStudentById = async (id) => {
   try {
     const student = await GET_DB().collection(STUDENT_COLLECTION).findOne(
-      { _id: new ObjectId(id) }
+      { _id: new ObjectId(id) },
+      { projection: NOSUBMITFIELD }
     )
     if (!student) {
       return { message: 'Sinh viên không tồn tại' }
@@ -118,7 +123,8 @@ const getStudentsByTeacherId = async (id) => {
           foreignField: '_id',
           as: 'topic'
         }
-      }
+      },
+      { projection: NOSUBMITFIELD }
     ])
       .toArray()
     return students
