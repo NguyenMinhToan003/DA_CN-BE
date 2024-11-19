@@ -64,11 +64,20 @@ const confirmStudents = async (id, studentIds) => {
       { _id: { $in: studentIds.map(id => new ObjectId(id)) } },
       {
         $set: {
-          status: 1,
-          updatedAt: Date.now()
+          status: 1
         }
       }
     )
+    if (result.modifiedCount > 0) {
+      await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
+        { _id: { $in: studentIds.map(id => new ObjectId(id)) } },
+        {
+          $set: {
+            updatedAt: Date.now()
+          }
+        }
+      )
+    }
     return result
   }
   catch (error) {
