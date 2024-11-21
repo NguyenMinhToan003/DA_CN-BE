@@ -22,17 +22,18 @@ const comparePassword = async (password, hash) => {
 }
 const login = async (email, password) => {
   try {
-    const user = await GET_DB().collection(TEACHER_COLLECTION).findOne({
-      email
-    })
+    const user = await GET_DB().collection(TEACHER_COLLECTION).findOne(
+      { email }
+    )
     if (!user) {
-      return 'Đăng nhập không thành công'
+      return { message: 'Đăng nhập không thành công' }
     }
     const isPasswordMatch = await comparePassword(password, user.password)
     if (!isPasswordMatch) {
-      return 'Đăng nhập không thành công'
+      return { message: 'Đăng nhập không thành công' }
     }
-    return user
+    delete user.password
+    return { ...user, message: 'Đăng nhập thành công' }
   }
   catch (error) {
     throw error
@@ -42,11 +43,14 @@ const register = async (data) => {
   try {
     data = await teacherSchema.validateAsync(data, { abortEarly: false })
     let user
-    user = await GET_DB().collection(TEACHER_COLLECTION).findOne({ email: data.email })
+    user = await GET_DB().collection(TEACHER_COLLECTION).findOne(
+      { email: data.email }
+    )
     if (user) {
       return { message: 'Email đã tồn tại' }
     }
     user = await GET_DB().collection(TEACHER_COLLECTION).insertOne(data)
+    delete user.password
     return { ...user, message: 'Giáo viên đăng kí thành công' }
   }
   catch (error) {
@@ -94,6 +98,7 @@ const confirmStudents = async (id, studentIds) => {
 }
 export const teacherModel = {
   TEACHER_COLLECTION,
+  NOSUBMITFIELD,
   teacherSchema,
   login,
   register,

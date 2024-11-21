@@ -108,6 +108,33 @@ const updateTopic = async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
   }
 }
+const deleteTopic = async (req, res, next) => {
+  const schema = Joi.object({
+    id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
+    teacherId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+  })
+  try {
+    await schema.validateAsync(req.body, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+  }
+}
+const removeStudent = async (req, res, next) => {
+  const schema = Joi.object({
+    topicId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
+    studentId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
+    teacherId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+  })
+  try {
+    await schema.validateAsync(req.body, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+  }
+}
 export const topicValidation = {
   createTopic,
   joinTopic,
@@ -116,5 +143,7 @@ export const topicValidation = {
   confirmTopic,
   createEmptyTopic,
   getDetailTopicById,
-  updateTopic
+  updateTopic,
+  deleteTopic,
+  removeStudent
 }

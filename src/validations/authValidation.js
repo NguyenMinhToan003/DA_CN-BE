@@ -14,7 +14,6 @@ const login = async (req, res, next) => {
   }
   catch (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
-
   }
 }
 const registerWithTeacher = async (req, res, next) => {

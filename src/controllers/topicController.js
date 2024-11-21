@@ -99,6 +99,26 @@ const updateTopic = async (req, res) => {
     throw error
   }
 }
+const deleteTopic = async (req, res) => {
+  try {
+    const { id, teacherId } = req.body
+    const result = await topicService.deleteTopic(id, teacherId)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const removeStudent = async (req, res) => {
+  try {
+    const { topicId, studentId, teacherId } = req.body
+    const result = await topicService.removeStudent(topicId, studentId, teacherId)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const topicController = {
   createTopic,
   joinTopic,
@@ -107,5 +127,7 @@ export const topicController = {
   confirmTopic,
   createEmptyTopic,
   getDetailTopicById,
-  updateTopic
+  updateTopic,
+  deleteTopic,
+  removeStudent
 }

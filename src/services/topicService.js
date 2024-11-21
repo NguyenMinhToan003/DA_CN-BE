@@ -73,6 +73,22 @@ const updateTopic = async (teacherId, topicId, data) => {
     throw error
   }
 }
+const deleteTopic = async (id, teacherId) => {
+  try {
+    return await topicModel.deleteTopic(id, teacherId)
+  }
+  catch (error) {
+    throw error
+  }
+}
+const removeStudent = async (topicId, studentId, teacherId) => {
+  try {
+    return await topicModel.removeStudent(topicId, studentId, teacherId)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const topicService = {
   createTopic,
   joinTopic,
@@ -81,5 +97,7 @@ export const topicService = {
   confirmTopic,
   createEmptyTopic,
   getDetailTopicById,
-  updateTopic
+  updateTopic,
+  deleteTopic,
+  removeStudent
 }

@@ -7,7 +7,6 @@ const notificationSchema = Joi.object({
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(Date.now())
 })
-
 export const notificationModel = {
   NOTIFICATION_COLLECTION,
   notificationSchema

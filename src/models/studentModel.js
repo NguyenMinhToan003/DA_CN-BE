@@ -28,9 +28,9 @@ const comparePassword = async (password, hash) => {
 }
 const login = async (email, password) => {
   try {
-    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne({
-      email
-    })
+    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
+      { email }
+    )
     if (!user) {
       return { message: 'Tài khoản không hợp lệ' }
     }
@@ -38,6 +38,7 @@ const login = async (email, password) => {
     if (!isPasswordMatch) {
       return { message: 'Tài khoản không hợp lệ' }
     }
+    delete user.password
     return { ...user, message: 'Đăng nhập thành công' }
   }
   catch (error) {
@@ -49,11 +50,15 @@ const register = async (data) => {
     data = await studentSchema.validateAsync(data, { abortEarly: false })
 
     let user
-    user = await GET_DB().collection(STUDENT_COLLECTION).findOne({ email: data.email })
+    user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
+      { email: data.email },
+      { project: NOSUBMITFIELD }
+    )
     if (user) {
       return { message: 'Email đã tồn tại' }
     }
     user = await GET_DB().collection(STUDENT_COLLECTION).insertOne(data)
+    delete user.password
     return { ...user, message: 'Sinh Viên đăng kí thành công' }
   }
   catch (error) {
@@ -124,17 +129,19 @@ const getStudentsByTeacherId = async (id) => {
           as: 'topic'
         }
       },
-      { projection: NOSUBMITFIELD }
-    ])
-      .toArray()
+      {
+        $project: NOSUBMITFIELD
+      }
+    ]).toArray()
     return students
-  }
-  catch (error) {
+  } catch (error) {
     throw error
   }
 }
+
 export const studentModel = {
   STUDENT_COLLECTION,
+  NOSUBMITFIELD,
   studentSchema,
   login,
   register,
