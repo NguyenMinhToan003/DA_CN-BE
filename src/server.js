@@ -18,7 +18,11 @@ const START_SERVER = () => {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(cookieParser())
   app.use('/api/v1', APIs_v1)
-
+  app.use((req, res) => {
+    res.status(404).json({
+      message: 'Not found'
+    })
+  })
   // lang nghe socket
   const io = new Server(server, {
     cors: {
