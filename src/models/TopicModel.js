@@ -57,21 +57,22 @@ const findTopicById = async (id) => {
     throw error
   }
 }
+
 const student_topic = async (id, studentIds) => {
   try {
     const topic = await GET_DB().collection(TOPIC_COLLECTION).findOne({ _id: new ObjectId(id) })
     if (!topic) return { message: 'Đề tài không tồn tại' }
+
     const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).find(
       { _id: { $in: studentIds.map(id => new ObjectId(id)) } }
     ).toArray()
 
-    const isNoMatch = students.some(student => {
-      console.log(student)
-      return student?.teacherId === null // chua co giao vien
-        || (student?.topicId?.toString() !== id && student?.topicId !== null)// da co de tai khac
-        || student.status === 0 // chua xac nhan cua giao vien
-    })
-    if (isNoMatch) return { message: 'Không thể làm nhóm được' }
+    for (const student of students) {
+      if (!student.teacherId) return { message: 'Sinh viên chưa chọn giáo viên' }
+      if (student.topicId && student.topicId.toString() !== id) return { message: 'Sinh viên đã có đề tài rồi' }
+      if (student.status === 0) return { message: 'Sinh viên chưa được xác nhận' }
+    }
+
     const result = await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
       { _id: { $in: studentIds.map(id => new ObjectId(id)) } },
       {
@@ -81,12 +82,13 @@ const student_topic = async (id, studentIds) => {
         }
       }
     )
+
     return { ...result, message: 'Làm nhóm thành công' }
-  }
-  catch (error) {
+  } catch (error) {
     throw error
   }
 }
+
 const findTopicByTeacherId = async (id) => {
   try {
     const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).find(
@@ -113,7 +115,8 @@ const confirmTopic = async (teacherId, topicId) => {
     )
     if (!topic) return { message: 'Đề tài không tồn tại' }
 
-    await topicSchema.validateAsync({ ...topic, _id: topic._id.toString() }, { abortEarly: false })
+    await topicSchema.validateAsync({ ...topic, _id: topic._id.toString() },
+      { abortEarly: false })
     const result = await GET_DB().collection(TOPIC_COLLECTION).updateOne(
       { _id: new ObjectId(topicId) },
       {
@@ -251,16 +254,13 @@ const deleteTopic = async (id, teacherId) => {
       return { message: 'Sinh viên không thuộc quản lý' }
     const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).find(
       { topicId: new ObjectId(id) }).toArray()
-    const resetTopicUser = students.map(async student => {
-      await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateOne(
-        { _id: student._id },
-        {
-          $set: {
-            topicId: null
-          }
-        }
-      )
-    })
+    const bulkOps = students.map(student => ({
+      updateOne: {
+        filter: { _id: new ObjectId(student._id) },
+        update: { $set: { topicId: null } }
+      }
+    }))
+    await GET_DB().collection(studentModel.STUDENT_COLLECTION).bulkWrite(bulkOps)
     const result = await GET_DB().collection(TOPIC_COLLECTION).deleteOne({ _id: new ObjectId(id) })
     return { ...result, message: 'Xóa đề tài thành công' }
   }
