@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion } from 'mongodb'
 import 'dotenv/config'
+import { statusColection } from '../utils/statusColection'
 let getData = null
 const clientInstance = new MongoClient(process.env.MONGODB_URI, {
   serverApi: {
@@ -15,6 +16,10 @@ export const CONNECT_DB = async () => {
   // ket noi thanh cong thi truy cap database voi MONGO_NAME
   getData = clientInstance.db(process.env.MONGODB_NAME)
   console.log('Connected to database >>>>')
+  const collections = await getData.listCollections({ name: 'status' }).toArray()
+  if (collections.length === 0) {
+    await getData.collection('status').insertMany(statusColection)
+  }
 }
 export const GET_DB = () => {
   if (!getData) console.error('Missing connect database!!!')
