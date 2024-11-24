@@ -14,7 +14,6 @@ const resourceSchema = Joi.object({
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(Date.now())
 })
-
 const uploadResource = async (url, name, description, topicId, studentId) => {
   try {
     const student = await studentModel.findStudentById(studentId)

@@ -36,8 +36,8 @@ const student_teacher = async (req, res) => {
 }
 const getStudentsByTeacherId = async (req, res) => {
   try {
-    const { id } = req.query
-    const result = await studentService.getStudentsByTeacherId(id)
+    const { id, status, process } = req.query
+    const result = await studentService.getStudentsByTeacherId(id, status, process)
     return res.status(StatusCodes.OK).json(result)
   }
   catch (error) {
