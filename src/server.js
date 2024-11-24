@@ -9,6 +9,7 @@ import 'dotenv/config'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { socket } from './socket/socket'
+import { configCloundinary } from './configs/cloundinary'
 
 const START_SERVER = () => {
   const app = express()
@@ -17,6 +18,7 @@ const START_SERVER = () => {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(cookieParser())
+  configCloundinary()
   app.use('/api/v1', APIs_v1)
   app.use((req, res) => {
     res.status(404).json({

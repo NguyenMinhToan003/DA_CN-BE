@@ -12,7 +12,6 @@ const uploadResource = async (req, res, next) => {
     createdAt: Joi.date().timestamp().default(Date.now()),
     updatedAt: Joi.date().timestamp().default(Date.now())
   })
-
   try {
     await schema.validateAsync(req.body, { abortEarly: false })
     next()

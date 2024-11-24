@@ -23,7 +23,6 @@ const student_teacher = async (req, res, next) => {
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
   })
   try {
-
     await schema.validateAsync(req.query, { abortEarly: false })
     next()
   }
@@ -34,7 +33,8 @@ const student_teacher = async (req, res, next) => {
 const getStudentsByTeacherId = async (req, res, next) => {
   const schema = Joi.object({
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
-    status: Joi.number()
+    status: Joi.number(),
+    process: Joi.number()
   })
   try {
     await schema.validateAsync(req.query, { abortEarly: false })

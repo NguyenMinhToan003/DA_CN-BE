@@ -113,13 +113,19 @@ const findStudentById = async (id) => {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id) => {
+const getStudentsByTeacherId = async (id, status, process) => {
   try {
+    status = parseInt(status)
+    process = parseInt(process)
+    const filter = {
+      teacherId: new ObjectId(id)
+    }
+    if (status !== -1) {
+      filter.status = status
+    }
     const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
       {
-        $match: {
-          teacherId: new ObjectId(id)
-        }
+        $match: filter
       },
       {
         $lookup: {
@@ -130,14 +136,19 @@ const getStudentsByTeacherId = async (id) => {
         }
       },
       {
+        $match: process !== -1 ? { 'topic.process': process } : {}
+      },
+      {
         $project: NOSUBMITFIELD
       }
     ]).toArray()
     return students
   } catch (error) {
-    throw error
+    console.error('Error in getStudentsByTeacherId:', error.message, error.stack)
+    throw new Error('Failed to retrieve students by teacher ID.')
   }
 }
+
 
 export const studentModel = {
   STUDENT_COLLECTION,
