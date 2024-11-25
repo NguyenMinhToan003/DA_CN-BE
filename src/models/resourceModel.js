@@ -17,9 +17,9 @@ const resourceSchema = Joi.object({
 const uploadResource = async (url, name, description, topicId, studentId) => {
   try {
     const student = await studentModel.findStudentById(studentId)
-    if (!student) return { message: 'Sinh Viên không tồn tại' }
+    if (!student._id) return student
     const topic = await topicModel.findTopicById(topicId)
-    if (!topic) return { message: 'Đề Tài không tồn tại' }
+    if (!topic._id) return topic
     if (student?.topicId?.toString() !== topicId)
       return { message: 'Sinh Viên không thuộc đề tài' }
     const newResource = await resourceSchema.validateAsync({ url, name, description, topicId },
