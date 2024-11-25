@@ -70,8 +70,9 @@ const getTeachers = async () => {
 }
 const confirmStudents = async (id, studentIds) => {
   try {
-    const teacher = await GET_DB().collection(TEACHER_COLLECTION).findOne({ _id: new ObjectId(id) })
-    if (!teacher) return { message: 'Giáo viên không tồn tại' }
+    const teacher = await findTeacherById(id)
+    if (!teacher._id) return teacher
+
     const result = await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
       { _id: { $in: studentIds.map(id => new ObjectId(id)) } },
       {
@@ -96,6 +97,21 @@ const confirmStudents = async (id, studentIds) => {
     throw error
   }
 }
+const findTeacherById = async (id) => {
+  try {
+    const teacher = await GET_DB().collection(TEACHER_COLLECTION).findOne(
+      { _id: new ObjectId(id) },
+      { projection: NOSUBMITFIELD }
+    )
+    if (!teacher) {
+      return { message: 'Giáo viên không tồn tại' }
+    }
+    return teacher
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const teacherModel = {
   TEACHER_COLLECTION,
   NOSUBMITFIELD,
@@ -103,5 +119,6 @@ export const teacherModel = {
   login,
   register,
   getTeachers,
-  confirmStudents
+  confirmStudents,
+  findTeacherById
 }

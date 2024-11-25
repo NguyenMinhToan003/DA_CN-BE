@@ -31,8 +31,18 @@ const getStudentsByTeacherId = async (id, status, process) => {
     throw error
   }
 }
+const getStudent = async (id) => {
+  try {
+
+    return await studentModel.findStudentById(id)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const studentService = {
   student_topic,
   student_teacher,
+  getStudent,
   getStudentsByTeacherId
 }

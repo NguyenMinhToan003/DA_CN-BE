@@ -102,6 +102,7 @@ const updateTopic = async (req, res) => {
 const deleteTopic = async (req, res) => {
   try {
     const { id, teacherId } = req.body
+
     const result = await topicService.deleteTopic(id, teacherId)
     return res.status(StatusCodes.OK).json(result)
   }

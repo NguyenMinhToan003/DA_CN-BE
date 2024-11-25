@@ -8,7 +8,6 @@ const createTopic = async (data) => {
       description: data.description,
       tech: data.tech
     }
-
     const topic = await topicModel.create(data.studentId, dataTopic)
     return { ...topic }
   }
