@@ -113,35 +113,37 @@ const findStudentById = async (id) => {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id, status, process) => {
+const getStudentsByTeacherId = async (id, status, process, topic) => {
   try {
     status = parseInt(status)
     process = parseInt(process)
-    const filter = {
-      teacherId: new ObjectId(id)
-    }
-    if (status !== -1) {
-      filter.status = status
-    }
-    const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
-      {
-        $match: filter
-      },
-      {
-        $lookup: {
-          from: topicModel.TOPIC_COLLECTION,
-          localField: 'topicId',
-          foreignField: '_id',
-          as: 'topic'
+    topic = parseInt(topic)
+    const filter = { teacherId: new ObjectId(id) }
+    if (status === 1 || status === 0) filter.status = status
+    // if topic === 1 => filter.topicId !== null
+    // if topic === 0 => filter.topicId === null
+    if (topic === 1) filter.topicId = { $ne: null }
+    if (topic === 0) filter.topicId = null
+
+    const students = await GET_DB()
+      .collection(STUDENT_COLLECTION)
+      .aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: topicModel.TOPIC_COLLECTION,
+            localField: 'topicId',
+            foreignField: '_id',
+            as: 'topic'
+          }
+        },
+        {
+          $match: process !== -1 && topic == 1 ? { 'topic.process': process } : {}
+        },
+        {
+          $project: NOSUBMITFIELD
         }
-      },
-      {
-        $match: process !== -1 ? { 'topic.process': process } : {}
-      },
-      {
-        $project: NOSUBMITFIELD
-      }
-    ]).toArray()
+      ]).toArray()
     return students
   } catch (error) {
     console.error('Error in getStudentsByTeacherId:', error.message, error.stack)

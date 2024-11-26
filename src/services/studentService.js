@@ -22,10 +22,9 @@ const student_teacher = async (id, teacherId) => {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id, status, process) => {
+const getStudentsByTeacherId = async (id, status, process, topic) => {
   try {
-
-    return await studentModel.getStudentsByTeacherId(id, status, process)
+    return await studentModel.getStudentsByTeacherId(id, status, process, topic)
   }
   catch (error) {
     throw error
