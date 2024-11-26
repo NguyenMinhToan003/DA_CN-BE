@@ -34,7 +34,8 @@ const getStudentsByTeacherId = async (req, res, next) => {
   const schema = Joi.object({
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
     status: Joi.number(),
-    process: Joi.number()
+    process: Joi.number(),
+    topic: Joi.number()
   })
   try {
     await schema.validateAsync(req.query, { abortEarly: false })
