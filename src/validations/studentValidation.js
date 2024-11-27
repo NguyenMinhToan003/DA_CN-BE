@@ -35,7 +35,7 @@ const getStudentsByTeacherId = async (req, res, next) => {
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
     status: Joi.number(),
     process: Joi.number(),
-    topic: Joi.number()
+    topic: Joi.number().valid(-1, 0, 1).default(-1)
   })
   try {
     await schema.validateAsync(req.query, { abortEarly: false })
@@ -57,9 +57,25 @@ const getStudent = async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
+const getStudentsByTeacherKey = async (req, res, next) => {
+  const schema = Joi.object({
+    key: Joi.string().default(-1),
+    teacherId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
+    topic: Joi.number().valid(-1, 0, 1).default(-1)
+  })
+  try {
+    await schema.validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+  }
+}
+
 export const studentValidation = {
   student_topic,
   student_teacher,
   getStudent,
-  getStudentsByTeacherId
+  getStudentsByTeacherId,
+  getStudentsByTeacherKey
 }

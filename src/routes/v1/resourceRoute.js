@@ -5,6 +5,6 @@ import { uploadMulter } from '../../configs/cloundinary'
 const Router = express.Router()
 
 Router.route('/upload')
-  .post(resourceValidation.uploadResource, uploadMulter().single('link'), resourceController.uploadResource)
+  .post(resourceValidation.uploadResource, uploadMulter().single('file'), resourceController.uploadResource)
 
 export const resourceRoute = Router

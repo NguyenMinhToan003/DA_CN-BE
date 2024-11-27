@@ -151,6 +151,31 @@ const getStudentsByTeacherId = async (id, status, process, topic) => {
   }
 }
 
+const getStudentsByTeacherKey = async (key, teacherId, topic) => {
+  try {
+    topic = parseInt(topic)
+    const filter = {
+      teacherId: new ObjectId(teacherId)
+    }
+    if (key !== undefined && key !== null && key !== '') {
+      filter.$or = [
+        { name: { $regex: key, $options: 'i' } },
+        { studentCode: { $regex: key, $options: 'i' } }
+      ]
+    }
+    if (topic === 1 || topic === 0) {
+      filter.topicId = topic === 1 ? { $ne: null } : null
+    }
+    const students = await GET_DB().collection(STUDENT_COLLECTION).find(
+      filter,
+      { projection: NOSUBMITFIELD }
+    ).toArray()
+    return students
+  }
+  catch (error) {
+    throw error
+  }
+}
 
 export const studentModel = {
   STUDENT_COLLECTION,
@@ -160,5 +185,6 @@ export const studentModel = {
   register,
   findStudentById,
   student_teacher,
-  getStudentsByTeacherId
+  getStudentsByTeacherId,
+  getStudentsByTeacherKey
 }

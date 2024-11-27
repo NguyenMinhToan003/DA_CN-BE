@@ -5,7 +5,6 @@ import { REGEX_OBJECTID, MESSAGE_OBJECID } from '../utils/regexs'
 const uploadResource = async (req, res, next) => {
   const schema = Joi.object({
     studentId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
-    url: Joi.string().required(),
     name: Joi.string().required(),
     description: Joi.string().required(),
     topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
