@@ -54,9 +54,20 @@ const getStudent = async (req, res) => {
     throw error
   }
 }
+const getStudentsByTeacherKey = async (req, res) => {
+  try {
+    const { key, teacherId, topic } = req.query
+    const result = await studentService.getStudentsByTeacherKey(key, teacherId, topic)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const studentController = {
   student_topic,
   student_teacher,
   getStudentsByTeacherId,
-  getStudent
+  getStudent,
+  getStudentsByTeacherKey
 }

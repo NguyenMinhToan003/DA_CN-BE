@@ -39,9 +39,18 @@ const getStudent = async (id) => {
     throw error
   }
 }
+const getStudentsByTeacherKey = async (key, teacherId, topic) => {
+  try {
+    return await studentModel.getStudentsByTeacherKey(key, teacherId, topic)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const studentService = {
   student_topic,
   student_teacher,
   getStudent,
-  getStudentsByTeacherId
+  getStudentsByTeacherId,
+  getStudentsByTeacherKey
 }
