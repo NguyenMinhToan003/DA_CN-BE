@@ -11,7 +11,7 @@ const confirmStudents = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 export const teacherValidation = {

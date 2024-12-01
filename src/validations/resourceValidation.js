@@ -7,9 +7,7 @@ const uploadResource = async (req, res, next) => {
     studentId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
     name: Joi.string().required(),
     description: Joi.string().required(),
-    topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
-    createdAt: Joi.date().timestamp().default(Date.now()),
-    updatedAt: Joi.date().timestamp().default(Date.now())
+    topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required()
   })
   try {
     await schema.validateAsync(req.body, { abortEarly: false })
@@ -19,6 +17,19 @@ const uploadResource = async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
+const getDsResource = async (req, res, next) => {
+  const schema = Joi.object({
+    topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required()
+  })
+  try {
+    await schema.validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+  }
+}
 export const resourceValidation = {
-  uploadResource
+  uploadResource,
+  getDsResource
 }

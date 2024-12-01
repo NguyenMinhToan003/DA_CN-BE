@@ -6,5 +6,4 @@ export const uploadImage = async (filePath) => {
   catch (error) {
     throw error
   }
-
 }

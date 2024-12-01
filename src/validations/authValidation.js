@@ -22,7 +22,7 @@ const registerWithTeacher = async (req, res, next) => {
     name: Joi.string().required(),
     email: Joi.string().pattern(REGEX_EMAIL).required(),
     password: Joi.string().required(),
-    profile_pic: Joi.string().required()
+    profile_pic: Joi.string().default('')
   })
   try {
     await schema.validateAsync(req.body, { abortEarly: false })
@@ -37,7 +37,7 @@ const registerWithStudent = async (req, res, next) => {
     name: Joi.string().required(),
     email: Joi.string().pattern(REGEX_EMAIL).required(),
     password: Joi.string().required(),
-    profile_pic: Joi.string().required(),
+    profile_pic: Joi.string().default(''),
     CLASS: Joi.string().required(),
     studentCode: Joi.string().required()
   })
