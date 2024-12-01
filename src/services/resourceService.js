@@ -8,6 +8,15 @@ const uploadResource = async (url, name, description, topicId, studentId) => {
     throw error
   }
 }
+const getDsResource = async (topicId) => {
+  try {
+    return await resourceModel.getDsResource(topicId)
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const resourceService = {
-  uploadResource
+  uploadResource,
+  getDsResource
 }

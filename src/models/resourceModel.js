@@ -7,7 +7,7 @@ import { ObjectId } from 'mongodb'
 const RESOURCE_COLLECTION = 'resources'
 
 const resourceSchema = Joi.object({
-  url: Joi.string().required(),
+  url: Joi.array().items(Joi.string()),
   name: Joi.string().required(),
   description: Joi.string().required(),
   topicId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).required(),
@@ -22,6 +22,7 @@ const uploadResource = async (url, name, description, topicId, studentId) => {
     if (!topic._id) return topic
     if (student?.topicId?.toString() !== topicId)
       return { message: 'Sinh Viên không thuộc đề tài' }
+
     const newResource = await resourceSchema.validateAsync({ url, name, description, topicId },
       { abortEarly: false })
     const result = await GET_DB().collection(RESOURCE_COLLECTION).insertOne(
@@ -33,8 +34,20 @@ const uploadResource = async (url, name, description, topicId, studentId) => {
     throw error
   }
 }
+const getDsResource = async (topicId) => {
+  try {
+    const resources = await GET_DB().collection(RESOURCE_COLLECTION).aggregate([
+      { $match: { topicId: new ObjectId(topicId) } }
+    ]).toArray()
+    return resources
+  }
+  catch (error) {
+    throw error
+  }
+}
 export const resourceModel = {
   RESOURCE_COLLECTION,
   resourceSchema,
-  uploadResource
+  uploadResource,
+  getDsResource
 }

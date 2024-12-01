@@ -5,6 +5,12 @@ import { uploadMulter } from '../../configs/cloundinary'
 const Router = express.Router()
 
 Router.route('/upload')
-  .post(resourceValidation.uploadResource, uploadMulter().single('file'), resourceController.uploadResource)
+  .post(
+    uploadMulter().any('file', 5),
+    resourceValidation.uploadResource,
+    resourceController.uploadResource
+  )
+Router.route('/ds-resource')
+  .get(resourceValidation.getDsResource, resourceController.getDsResource)
 
 export const resourceRoute = Router

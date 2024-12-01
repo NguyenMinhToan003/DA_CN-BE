@@ -148,7 +148,7 @@ const createEmptyTopic = async (teacherId, studentId) => {
       name: '',
       description: '',
       tech: '',
-      process: 0,
+      process: 1,
       status: [
         'đang chờ',
         'đang thực hiện',

@@ -11,7 +11,7 @@ const studentSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
-  profile_pic: Joi.string().required(),
+  profile_pic: Joi.string().default(''),
   studentCode: Joi.string().required(),
   CLASS: Joi.string().required(),
   teacherId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID).default(null),

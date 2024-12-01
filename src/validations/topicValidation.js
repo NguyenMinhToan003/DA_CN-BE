@@ -13,7 +13,7 @@ const createTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const joinTopic = async (req, res, next) => {
@@ -26,7 +26,7 @@ const joinTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const getTopicById = async (req, res, next) => {
@@ -38,7 +38,7 @@ const getTopicById = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const getTopicByTeacherId = async (req, res, next) => {
@@ -50,7 +50,7 @@ const getTopicByTeacherId = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const confirmTopic = async (req, res, next) => {
@@ -63,7 +63,7 @@ const confirmTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const createEmptyTopic = async (req, res, next) => {
@@ -76,7 +76,7 @@ const createEmptyTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const getDetailTopicById = async (req, res, next) => {
@@ -88,7 +88,7 @@ const getDetailTopicById = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const updateTopic = async (req, res, next) => {
@@ -105,7 +105,7 @@ const updateTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const deleteTopic = async (req, res, next) => {
@@ -118,7 +118,7 @@ const deleteTopic = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 const removeStudent = async (req, res, next) => {
@@ -132,7 +132,7 @@ const removeStudent = async (req, res, next) => {
     next()
   }
   catch (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
 export const topicValidation = {
