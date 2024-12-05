@@ -21,14 +21,14 @@ const uploadResource = async (url, name, description, topicId, studentId) => {
     const topic = await topicModel.findTopicById(topicId)
     if (!topic._id) return topic
     if (student?.topicId?.toString() !== topicId)
-      return { message: 'Sinh Viên không thuộc đề tài' }
+      return { message: 'Sinh Viên không thuộc đề tài!' }
 
     const newResource = await resourceSchema.validateAsync({ url, name, description, topicId },
       { abortEarly: false })
     const result = await GET_DB().collection(RESOURCE_COLLECTION).insertOne(
       { ...newResource, topicId: new ObjectId(newResource.topicId) }
     )
-    return { ...result, message: 'Upload Resource thành công' }
+    return { ...result, message: 'Đã tải lên thành công' }
   }
   catch (error) {
     throw error

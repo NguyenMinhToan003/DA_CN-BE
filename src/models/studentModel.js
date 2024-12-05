@@ -107,6 +107,10 @@ const findStudentById = async (id) => {
     if (!student) {
       return { message: 'Sinh viên không tồn tại' }
     }
+    const teacher = await teacherModel.findTeacherById(student?.teacherId)
+    const topic = await topicModel.findTopicById(student?.topicId)
+    student.teacher = teacher
+    student.topic = topic
     return student
   }
   catch (error) {
