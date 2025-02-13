@@ -1,32 +1,72 @@
-import { studentModel } from '../models/studentModel'
+
+import { studentModel } from '../models/StudentModel'
 import { teacherModel } from '../models/teacherModel'
 import bcrypt from 'bcrypt'
 const saltRounds = 10
 const hashpassword = async (password) => {
   return await bcrypt.hash(password, saltRounds)
 }
-const login = async (email, password, user) => {
+
+const loginStudent = async (email, password) => {
   try {
-    let result = null
-    if (user === 'teacher') {
-      result = await teacherModel.login(email, password)
+    let user = await studentModel.login(email, password)
+    if (!user._id) return {
+      message: user.message
     }
-    else if (user == 'student') {
-      result = await studentModel.login(email, password)
+    return {
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        profile_pic: user.profile_pic,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      },
+      message: 'Đăng nhập thành công'
     }
-    return result
   }
   catch (error) {
     throw error
   }
 }
+
+const loginTeacher = async (email, password) => {
+  try {
+    let user = await teacherModel.login(email, password)
+    if (!user._id) return {
+      message: user.message
+    }
+    return {
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        profile_pic: user.profile_pic,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      },
+      message: 'Đăng nhập thành công'
+    }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 const registerWithStudent = async (data) => {
   try {
     data = {
       ...data,
       password: await hashpassword(data.password)
     }
-    return await studentModel.register(data)
+    const user = await studentModel.register(data)
+    if (user === null) {
+      return { message: 'Email đã tồn tại' }
+    }
+    return {
+      ...user,
+      message: 'Đăng kí thành công'
+    }
   }
   catch (error) {
     throw error
@@ -38,14 +78,22 @@ const registerWithTeacher = async (data) => {
       ...data,
       password: await hashpassword(data.password)
     }
-    return await teacherModel.register(data)
+    const user = await teacherModel.register(data)
+    if (user === null) {
+      return { message: 'Email đã tồn tại' }
+    }
+    return {
+      ...user,
+      message: 'Đăng kí thành công'
+    }
   }
   catch (error) {
     throw error
   }
 }
 export const authService = {
-  login,
+  loginStudent,
+  loginTeacher,
   registerWithStudent,
   registerWithTeacher
 

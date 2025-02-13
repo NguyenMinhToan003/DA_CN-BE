@@ -1,7 +1,7 @@
 import cors from 'cors'
-
+import 'dotenv/config'
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: process.env.APP_PORT,
   credentials: true
 }
 

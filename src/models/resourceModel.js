@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { REGEX_OBJECTID, MESSAGE_OBJECID } from '../utils/regexs.js'
 import { GET_DB } from '../configs/mongodb.js'
 import { studentModel } from './StudentModel.js'
-import { topicModel } from './TopicModel.js'
+import { topicModel } from './topicModel.js'
 import { ObjectId } from 'mongodb'
 const RESOURCE_COLLECTION = 'resources'
 

@@ -1,4 +1,4 @@
-import { topicModel } from '../models/TopicModel'
+import { topicModel } from '../models/topicModel'
 
 const createTopic = async (data) => {
   // da tao va join topic sinh vien vao topic
@@ -25,7 +25,12 @@ const joinTopic = async (topicId, studentIds) => {
 }
 const getTopicById = async (id) => {
   try {
-    return await topicModel.findTopicById(id)
+    const topic = await topicModel.findTopicById(id)
+    if (!topic) return { message: 'Topic không tồn tại' }
+    return {
+      ...topic,
+      message: 'Lấy thông tin topic thành công'
+    }
   }
   catch (error) {
     throw error
@@ -33,7 +38,11 @@ const getTopicById = async (id) => {
 }
 const getTopicByTeacherId = async (id) => {
   try {
-    return await topicModel.findTopicByTeacherId(id)
+    const topics = await topicModel.findTopicByTeacherId(id)
+    return {
+      data:topics,
+      message: 'Lấy thông tin topic'
+    }
   }
   catch (error) {
     throw error

@@ -1,10 +1,23 @@
 import { authService } from '../services/authService'
 import { StatusCodes } from 'http-status-codes'
-const login = async (req, res) => {
+const loginTeacher = async (req, res) => {
   try {
-    const { email, password, user } = req.body
-    const result = await authService.login(email, password, user)
-    if (!result._id) {
+    const { email, password } = req.body
+    const result = await authService.loginTeacher(email, password)
+    if (!result.data) {
+      return res.status(StatusCodes.UNAUTHORIZED).json(result)
+    }
+    return res.status(StatusCodes.OK).json(result)
+
+  } catch (error) {
+    throw error
+  }
+}
+const loginStudent = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const result = await authService.loginStudent(email, password)
+    if (!result.data) {
       return res.status(StatusCodes.UNAUTHORIZED).json(result)
     }
     return res.status(StatusCodes.OK).json(result)
@@ -54,7 +67,8 @@ const registerWithTeacher = async (req, res) => {
   }
 }
 export const authController = {
-  login,
+  loginTeacher,
+  loginStudent,
   registerWithStudent,
   registerWithTeacher
 }

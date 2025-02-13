@@ -1,9 +1,9 @@
 import Joi from 'joi'
 import { GET_DB } from '../configs/mongodb'
-import { studentModel } from './StudentModel'
 import { ObjectId } from 'mongodb'
 import { teacherModel } from './teacherModel'
 import { MESSAGE_OBJECID, REGEX_OBJECTID } from '../utils/regexs'
+import { studentModel } from './StudentModel'
 const TOPIC_COLLECTION = 'topics'
 const topicSchema = Joi.object({
   _id: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
@@ -20,13 +20,53 @@ const topicSchema = Joi.object({
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(Date.now())
 })
-const create = async (studentId, data) => {
+
+// const addStudentToTopic = async (topicId, studentId) => {
+//   try {
+//     const checkStudent = await checkStudentAfterAddToTopic(topicId, studentId)
+//     if (checkStudent._id) {
+//       const result = await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateOne(
+//         { _id: new ObjectId(studentId) },
+//         {
+//           $set: {
+//             topicId: new ObjectId(topicId),
+//             updatedAt: Date.now()
+//           }
+//         }
+//       )
+//       return result
+//     }
+//     return checkStudent
+//   }
+//   catch (error) {
+//     throw error
+//   }
+// }
+
+const checkStudentBeforeAddToTopic = async (studentId) => {
   try {
     const student = await studentModel.findStudentById(studentId)
-    if (!student._id) return student
-    if (!student.teacherId) return { message: 'Chưa chọn giảng viên' }
-    if (student.status === 0) return { message: 'Chưa đăng kí giáo viên thành công' }
-    if (student.topicId) return { message: 'Sinh viên đã có đề tài rồi' }
+    if (!student) return { message: 'Sinh viên không tồn tại' }
+    else if (!student.teacherId) return { message: 'Sinh viên chưa chọn giáo viên' }
+    else if (student.topicId) return {
+      topicId: student.topicId,
+      message: 'Sinh viên đã có đề tài rồi!'
+    }
+    else if (student.status === 0) return {
+      status: 0,
+      message: 'Sinh viên chưa được xác nhận'
+    }
+    else return { _id: student._id }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+const createByStudent = async (studentId, data) => {
+  try {
+    const checkStudent = await checkStudentBeforeAddToTopic(studentId)
+    if (!checkStudent._id) return checkStudent
     data = await topicSchema.validateAsync(data, { abortEarly: false })
     const topic = await GET_DB().collection(TOPIC_COLLECTION).insertOne(data)
     await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateOne(
@@ -38,7 +78,50 @@ const create = async (studentId, data) => {
         }
       }
     )
-    return topic
+    return {
+      ...topic,
+      message: 'Đăng ký đề tài thành công'
+    }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+const createByTeacher = async (teacherId, studentIds, data) => {
+  try {
+    const teacher = await teacherModel.findTeacherById(teacherId)
+    if (!teacher) return { message: 'Giáo viên không tồn tại' }
+    const students = []
+    for (const studentId of studentIds) {
+      const student = await checkStudentBeforeAddToTopic(studentId)
+      if (student._id) {
+        students.push(new ObjectId(studentId))
+      }
+    }
+    students.filter(student => {
+      if (student.toString() !== teacher._id.toString())
+        return student
+    })
+
+    if (students.length === 0) return { message: 'Tạo Đề tài không thành công!' }
+    data = await topicSchema.validateAsync(data, { abortEarly: false })
+    const topic = await GET_DB().collection(TOPIC_COLLECTION).insertOne(data)
+    await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
+      { _id: { $in: students } },
+      {
+        $set: {
+          topicId: new ObjectId(topic.insertedId),
+          updatedAt: data.updatedAt
+        }
+      }
+    )
+    return {
+      ...topic,
+      students: students,
+      message: 'Tạo đề tài thành công'
+    }
+
   }
   catch (error) {
     throw error
@@ -48,7 +131,6 @@ const create = async (studentId, data) => {
 const findTopicById = async (id) => {
   try {
     const topic = await GET_DB().collection(TOPIC_COLLECTION).findOne({ _id: new ObjectId(id) })
-    if (!topic) return { message: 'Đề tài không tồn tại' }
     return topic
   }
   catch (error) {
@@ -105,10 +187,13 @@ const findTopicByTeacherId = async (id) => {
 const confirmTopic = async (teacherId, topicId) => {
   try {
     const teacher = await teacherModel.findTeacherById(teacherId)
-    if (!teacher._id) return teacher
+    if (!teacher) return { message: 'Giáo viên không tồn tại' }
     const topic = await findTopicById(topicId)
-    if (!topic._id) return topic
-    if (topic.process !== 0) return { message: 'Đề tài đang thực hiện' }
+    if (!topic) return { message: 'Đề tài không tồn tại' }
+    if (topic.process !== 0) return { message: 'Đề tài đã được xác nhận trước đó' }
+    const students = await studentModel.getStudentsByTopicId(topicId)
+    if (students[0]?.teacherId?.toString() !== teacher._id.toString())
+      return { message: 'Sinh viên không thuộc quản lý' }
     await topicSchema.validateAsync({ ...topic, _id: topic._id.toString() },
       { abortEarly: false })
     const result = await GET_DB().collection(TOPIC_COLLECTION).updateOne(
@@ -132,7 +217,7 @@ const confirmTopic = async (teacherId, topicId) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw error
   }
 }
 const createEmptyTopic = async (teacherId, studentId) => {
@@ -189,11 +274,11 @@ const getDetailTopicById = async (id) => {
       {
         $project: studentModel.NOSUBMITFIELD
       }
-    ]).toArray()
+    ]).toArray()[0]
     return topic
   }
   catch (error) {
-    console.log(error)
+    throw error
   }
 }
 const updateTopic = async (teacherId, topicId, data) => {
@@ -211,7 +296,7 @@ const updateTopic = async (teacherId, topicId, data) => {
     )
     if (student.teacherId.toString() !== teacher._id.toString())
       return { message: 'Sinh Viên không thuộc quản lý' }
-    // if (topic.process !== 0) return { message: 'Đề tài đang thực hiện' }
+
     data = await topicSchema.validateAsync({ ...data, _id: topicId }, { abortEarly: false })
     const result = await GET_DB().collection(TOPIC_COLLECTION).updateOne(
       { _id: new ObjectId(topicId) },
@@ -238,11 +323,10 @@ const deleteTopic = async (id, teacherId) => {
     if (!teacher._id) return teacher
     const student = await GET_DB().collection(studentModel.STUDENT_COLLECTION).findOne(
       { topicId: new ObjectId(id) })
-    if (student.teacherId.toString() !== teacher._id.toString())
+    if (student?.teacherId?.toString() !== teacher?._id?.toString())
       return { message: 'Sinh viên không thuộc quản lý' }
     if (topic.process !== 0) return { message: 'Đề tài đang thực hiện' }
-    const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).find(
-      { topicId: new ObjectId(id) }).toArray()
+    const students = await studentModel.getStudentsByTopicId(id)
     const bulkOps = students.map(student => ({
       updateOne: {
         filter: { _id: new ObjectId(student._id) },
@@ -260,9 +344,9 @@ const deleteTopic = async (id, teacherId) => {
 const removeStudent = async (topicId, studentId, teacherId) => {
   try {
     const student = await studentModel.findStudentById(studentId)
-    if (!student._id) return student
+    if (!student) return { message: 'Sinh viên không tồn tại' }
     const topic = await topicModel.findTopicById(topicId)
-    if (!topic._id) return topic
+    if (!topic) return { message: 'Đề tài không tồn tại' }
     const students = await GET_DB().collection(studentModel.STUDENT_COLLECTION).aggregate([
       { $match: { topicId: new ObjectId(topicId) } }
     ]).toArray()
@@ -301,8 +385,9 @@ const removeStudent = async (topicId, studentId, teacherId) => {
 export const topicModel = {
   TOPIC_COLLECTION,
   topicSchema,
-  create,
+  createByStudent,
   findTopicById,
+  createByTeacher,
   student_topic,
   findTopicByTeacherId,
   confirmTopic,
