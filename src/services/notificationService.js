@@ -10,7 +10,12 @@ const sendNotification = async (title, description, teacherId) => {
 }
 const getDsNotification = async (id) => {
   try {
-    return notificationModel.getDsNotification(id)
+    let result = await notificationModel.getDsNotificationByTeacher(id)
+    if (result.length === 0) result = await notificationModel.getDsNotificationByStudent(id)
+    return {
+      data: result,
+      message : 'Danh sách thông báo'
+    }
   }
   catch (error) {
     throw error

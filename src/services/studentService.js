@@ -1,56 +1,43 @@
 import { studentModel } from '../models/StudentModel'
+import { topicModel } from '../models/topicModel'
 
-const student_topic = async (data) => {
+const studentRegisterTopic = async (id, data) => {
   try {
     data.updatedAt = Date.now()
-    return await studentModel.student_topic(data)
+    return await topicModel.createByStudent(id, data)
   }
   catch (error) {
     throw error
   }
 }
-const student_teacher = async (id, teacherId) => {
+const studentRegisterTeacher = async (studentId, teacherId) => {
   try {
-
     const data = {
       teacherId,
       updatedAt: Date.now()
     }
-    return await studentModel.student_teacher(id, data)
+    return await studentModel.studentRegisterTeacher(studentId, data)
   }
   catch (error) {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id, status, process, topic) => {
-  try {
-    return await studentModel.getStudentsByTeacherId(id, status, process, topic)
-  }
-  catch (error) {
-    throw error
-  }
-}
-const getStudent = async (id) => {
-  try {
 
-    return await studentModel.findStudentById(id)
-  }
-  catch (error) {
-    throw error
-  }
-}
-const getStudentsByTeacherKey = async (key, teacherId, topic) => {
+const getStudentDetail = async (id) => {
   try {
-    return await studentModel.getStudentsByTeacherKey(key, teacherId, topic)
+    const student = await studentModel.findStudentById(id)
+    if (!student) {
+      return { message: 'Sinh viên không tồn tại' }
+    }
+    return student
   }
   catch (error) {
     throw error
   }
 }
+
 export const studentService = {
-  student_topic,
-  student_teacher,
-  getStudent,
-  getStudentsByTeacherId,
-  getStudentsByTeacherKey
+  studentRegisterTopic,
+  studentRegisterTeacher,
+  getStudentDetail
 }

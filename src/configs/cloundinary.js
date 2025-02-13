@@ -1,12 +1,13 @@
 import { v2 as cloudinary } from 'cloudinary'
 import multer from 'multer'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import 'dotenv/config'
 export const configCloundinary = () => {
   // Configuration
   cloudinary.config({
-    cloud_name: 'dyn3tnqqt',
-    api_key: '939624815372626',
-    api_secret: 'Y9qzPbpPuSwar17NxZeo33iloVM'
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
   })
 }
 export const uploadMulter = () => {

@@ -98,7 +98,7 @@ const updateTopic = async (req, res, next) => {
     tech: Joi.string().required(),
     process: Joi.number().required(),
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
-    teacherId: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
+    teacherId: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID)
   })
   try {
     await schema.validateAsync(req.body, { abortEarly: false })
@@ -135,6 +135,7 @@ const removeStudent = async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
   }
 }
+
 export const topicValidation = {
   createTopic,
   joinTopic,

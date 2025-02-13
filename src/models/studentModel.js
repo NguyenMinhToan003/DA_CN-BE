@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb'
 import { REGEX_OBJECTID, MESSAGE_OBJECID } from '../utils/regexs'
 import { teacherModel } from './teacherModel'
-import { topicModel } from './TopicModel'
+import { topicModel } from './topicModel'
 const STUDENT_COLLECTION = 'students'
 const studentSchema = Joi.object({
   _id: Joi.string().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
@@ -28,18 +28,15 @@ const comparePassword = async (password, hash) => {
 }
 const login = async (email, password) => {
   try {
-    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
-      { email }
-    )
+    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne({ email })
     if (!user) {
-      return { message: 'Tài khoản không hợp lệ' }
+      return { message: 'Đăng nhập không thành công' }
     }
     const isPasswordMatch = await comparePassword(password, user.password)
     if (!isPasswordMatch) {
-      return { message: 'Tài khoản không hợp lệ' }
+      return { message: 'Đăng nhập không thành công' }
     }
-    delete user.password
-    return { ...user, message: 'Đăng nhập thành công' }
+    return user
   }
   catch (error) {
     throw error
@@ -55,26 +52,23 @@ const register = async (data) => {
       { project: NOSUBMITFIELD }
     )
     if (user) {
-      return { message: 'Email đã tồn tại' }
+      return null
     }
     user = await GET_DB().collection(STUDENT_COLLECTION).insertOne(data)
-    delete user.password
-    return { ...user, message: 'Sinh Viên đăng kí thành công' }
+    return user
   }
   catch (error) {
     throw error
   }
 }
-const student_teacher = async (id, data) => {
+const studentRegisterTeacher = async (id, data) => {
   try {
-    const user = await GET_DB().collection(STUDENT_COLLECTION).findOne(
-      { _id: new ObjectId(id) }
-    )
+    const user = await findStudentById(id)
     if (!user) {
       return { message: 'Sinh viên không tồn tại' }
     }
     if (user.status === 1) {
-      return { message: 'Giáo viên đã xác nhận' }
+      return { message: 'Đã được giáo viên xác nhận' }
     }
     const teacher = await GET_DB().collection(teacherModel.TEACHER_COLLECTION).findOne(
       { _id: new ObjectId(data.teacherId) }
@@ -92,7 +86,7 @@ const student_teacher = async (id, data) => {
         }
       }
     )
-    return { ...result, message: 'Chọn giáo viên thành công' }
+    return { ...result, message: 'Chọn giáo viên thành công, Hãy chờ phản hồi từ giáo viên!' }
   }
   catch (error) {
     throw error
@@ -105,13 +99,29 @@ const findStudentById = async (id) => {
       { projection: NOSUBMITFIELD }
     )
     if (!student) {
-      return { message: 'Sinh viên không tồn tại' }
+      return null
     }
-    const teacher = await teacherModel.findTeacherById(student?.teacherId)
-    const topic = await topicModel.findTopicById(student?.topicId)
-    student.teacher = teacher
-    student.topic = topic
+    if (student?.teacherId) {
+      const teacher = await teacherModel.findTeacherById(student?.teacherId)
+      student.teacher = teacher
+    }
+    if (student?.topicId) {
+      const topic = await topicModel.findTopicById(student?.topicId)
+      student.topic = topic
+    }
     return student
+  }
+  catch (error) {
+    throw error
+  }
+}
+const findStudentsByIds = async (ids) => {
+  try {
+    const students = await GET_DB().collection(STUDENT_COLLECTION).find(
+      { _id: { $in: ids.map(id => new ObjectId(id)) } },
+      { projection: NOSUBMITFIELD }
+    ).toArray()
+    return students
   }
   catch (error) {
     throw error
@@ -122,10 +132,9 @@ const getStudentsByTeacherId = async (id, status, process, topic) => {
     status = parseInt(status)
     process = parseInt(process)
     topic = parseInt(topic)
+
     const filter = { teacherId: new ObjectId(id) }
     if (status === 1 || status === 0) filter.status = status
-    // if topic === 1 => filter.topicId !== null
-    // if topic === 0 => filter.topicId === null
     if (topic === 1) filter.topicId = { $ne: null }
     if (topic === 0) filter.topicId = null
 
@@ -150,8 +159,7 @@ const getStudentsByTeacherId = async (id, status, process, topic) => {
       ]).toArray()
     return students
   } catch (error) {
-    console.error('Error in getStudentsByTeacherId:', error.message, error.stack)
-    throw new Error('Failed to retrieve students by teacher ID.')
+    throw error
   }
 }
 
@@ -170,8 +178,35 @@ const getStudentsByTeacherKey = async (key, teacherId, topic) => {
     if (topic === 1 || topic === 0) {
       filter.topicId = topic === 1 ? { $ne: null } : null
     }
+    // const students = await GET_DB().collection(STUDENT_COLLECTION).find(
+    //   filter,
+    //   { projection: NOSUBMITFIELD }
+    // ).toArray()
+    const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
+      { $match: filter },
+      {
+        $lookup: {
+          from: topicModel.TOPIC_COLLECTION,
+          localField: 'topicId',
+          foreignField: '_id',
+          as: 'topic'
+        }
+      },
+      {
+        $project: NOSUBMITFIELD
+      }
+    ]).toArray()
+    return students
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+const getStudentsByTopicId = async (topicId) => {
+  try {
     const students = await GET_DB().collection(STUDENT_COLLECTION).find(
-      filter,
+      { topicId: new ObjectId(topicId) },
       { projection: NOSUBMITFIELD }
     ).toArray()
     return students
@@ -188,7 +223,9 @@ export const studentModel = {
   login,
   register,
   findStudentById,
-  student_teacher,
+  findStudentsByIds,
+  studentRegisterTeacher,
   getStudentsByTeacherId,
-  getStudentsByTeacherKey
+  getStudentsByTeacherKey,
+  getStudentsByTopicId
 }
