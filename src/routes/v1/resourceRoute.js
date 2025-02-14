@@ -10,6 +10,7 @@ Router.route('/upload')
     resourceValidation.uploadResource,
     resourceController.uploadResource
   )
+
 Router.route('/ds-resource')
   .get(resourceValidation.getDsResource, resourceController.getDsResource)
 

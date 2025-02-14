@@ -274,7 +274,7 @@ const getDetailTopicById = async (id) => {
       {
         $project: studentModel.NOSUBMITFIELD
       }
-    ]).toArray()[0]
+    ]).toArray()
     return topic
   }
   catch (error) {

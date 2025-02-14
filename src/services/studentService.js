@@ -36,8 +36,19 @@ const getStudentDetail = async (id) => {
   }
 }
 
+const getAllStudent = async (page, limit) => {
+  try {
+    console.log('page', page, 'limit', limit)
+    return await studentModel.getAll(+page, +limit)
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 export const studentService = {
   studentRegisterTopic,
   studentRegisterTeacher,
-  getStudentDetail
+  getStudentDetail,
+  getAllStudent
 }
