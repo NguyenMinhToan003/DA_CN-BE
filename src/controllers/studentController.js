@@ -44,8 +44,20 @@ const getStudentDetail = async (req, res) => {
   }
 }
 
+const getAllStudent = async (req, res) => {
+  try {
+    const { page, limit } = req.query
+    const result = await studentService.getAllStudent(page, limit)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 export const studentController = {
   studentRegisterTopic,
   studentRegisterTeacher,
-  getStudentDetail
+  getStudentDetail,
+  getAllStudent
 }

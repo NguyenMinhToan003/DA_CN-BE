@@ -127,21 +127,13 @@ const findStudentsByIds = async (ids) => {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id, status, process, topic) => {
+const getStudentsByTeacherId = async (id, page, limit) => {
   try {
-    status = parseInt(status)
-    process = parseInt(process)
-    topic = parseInt(topic)
-
-    const filter = { teacherId: new ObjectId(id) }
-    if (status === 1 || status === 0) filter.status = status
-    if (topic === 1) filter.topicId = { $ne: null }
-    if (topic === 0) filter.topicId = null
-
+    // get students by page and limit
     const students = await GET_DB()
       .collection(STUDENT_COLLECTION)
       .aggregate([
-        { $match: filter },
+        { $match: { teacherId: new ObjectId(id) } },
         {
           $lookup: {
             from: topicModel.TOPIC_COLLECTION,
@@ -151,13 +143,21 @@ const getStudentsByTeacherId = async (id, status, process, topic) => {
           }
         },
         {
-          $match: process !== -1 && topic == 1 ? { 'topic.process': process } : {}
-        },
-        {
           $project: NOSUBMITFIELD
-        }
+        },
+        { $skip: (page - 1) * limit },
+        { $limit: limit }
       ]).toArray()
-    return students
+    const total = Math.ceil(
+      await GET_DB().collection(STUDENT_COLLECTION).countDocuments({ teacherId: new ObjectId(id) })
+    )
+    const totalPage = Math.ceil(total / limit)
+
+    return {
+      students,
+      total,
+      totalPage
+    }
   } catch (error) {
     throw error
   }
@@ -216,6 +216,27 @@ const getStudentsByTopicId = async (topicId) => {
   }
 }
 
+const getAll = async(page, limit) => {
+  try {
+    const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    ]).toArray()
+
+    const total = await GET_DB().collection(STUDENT_COLLECTION).countDocuments()
+    const totalPage = Math.ceil(total / limit)
+
+    return {
+      students,
+      total,
+      totalPage
+    }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 export const studentModel = {
   STUDENT_COLLECTION,
   NOSUBMITFIELD,
@@ -227,5 +248,6 @@ export const studentModel = {
   studentRegisterTeacher,
   getStudentsByTeacherId,
   getStudentsByTeacherKey,
-  getStudentsByTopicId
+  getStudentsByTopicId,
+  getAll
 }

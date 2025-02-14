@@ -42,9 +42,23 @@ const getStudentDetail = async (req, res, next) => {
   }
 }
 
+const getAllStudent = async (req, res, next) => {
+  const schema = Joi.object({
+    page: Joi.number().required(),
+    limit: Joi.number().required()
+  })
+  try {
+    await schema.validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+  }
+}
 
 export const studentValidation = {
   studentRegisterTopic,
   studentRegisterTeacher,
-  getStudentDetail
+  getStudentDetail,
+  getAllStudent
 }
