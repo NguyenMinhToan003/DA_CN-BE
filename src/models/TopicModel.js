@@ -105,7 +105,7 @@ const createByTeacher = async (teacherId, studentIds, data) => {
     })
 
     if (students.length === 0) return { message: 'Tạo Đề tài không thành công!' }
-    data = await topicSchema.validateAsync(data, { abortEarly: false })
+    data = await topicSchema.validateAsync({ ...data, process: 1 }, { abortEarly: false })
     const topic = await GET_DB().collection(TOPIC_COLLECTION).insertOne(data)
     await GET_DB().collection(studentModel.STUDENT_COLLECTION).updateMany(
       { _id: { $in: students } },

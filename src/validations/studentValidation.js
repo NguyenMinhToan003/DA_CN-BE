@@ -56,9 +56,27 @@ const getAllStudent = async (req, res, next) => {
   }
 }
 
+const searchStudent = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      key: Joi.string().required(),
+      type: Joi.string().required().valid(
+        'name', 'email', 'studentCode', 'CLASS', 'status', 'all'),
+      page: Joi.number().required(),
+      limit: Joi.number().required()
+    })
+    await schema.validateAsync(req.query, { abortEarly: false })
+    next()
+  }
+  catch (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message })
+  }
+}
+
 export const studentValidation = {
   studentRegisterTopic,
   studentRegisterTeacher,
   getStudentDetail,
-  getAllStudent
+  getAllStudent,
+  searchStudent
 }

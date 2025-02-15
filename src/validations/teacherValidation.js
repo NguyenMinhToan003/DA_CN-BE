@@ -18,6 +18,9 @@ const confirmStudents = async (req, res, next) => {
 const getStudentsByTeacherId = async (req, res, next) => {
   const schema = Joi.object({
     id: Joi.string().required().pattern(REGEX_OBJECTID).message(MESSAGE_OBJECID),
+    type: Joi.string().required().valid(
+      'all', 'name', 'email', 'studentCode', 'CLASS'),
+    key: Joi.string().required(),
     page: Joi.number().default(1).required(),
     limit: Joi.number().default(5).required()
   })

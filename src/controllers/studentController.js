@@ -55,9 +55,21 @@ const getAllStudent = async (req, res) => {
   }
 }
 
+const searchStudent = async (req, res) => {
+  try {
+    const { key, type, page, limit } = req.query
+    const result = await studentService.searchStudent(key, type, page, limit)
+    return res.status(StatusCodes.OK).json(result)
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 export const studentController = {
   studentRegisterTopic,
   studentRegisterTeacher,
   getStudentDetail,
-  getAllStudent
+  getAllStudent,
+  searchStudent
 }

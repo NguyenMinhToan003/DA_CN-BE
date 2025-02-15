@@ -22,9 +22,9 @@ const confirmStudents = async (req, res) => {
 
 const getStudentsByTeacherId = async (req, res) => {
   try {
-    const { id, page, limit } = req.query
+    const { id, page, limit, type, key } = req.query
 
-    const result = await teacherService.getStudentsByTeacherId(id, page, limit)
+    const result = await teacherService.getStudentsByTeacherId(id, type, key, page, limit)
     return res.status(StatusCodes.OK).json(result)
   }
   catch (error) {
@@ -50,7 +50,7 @@ const teacherCreateTopic = async (req, res) => {
       tech
     }
     const result = await teacherService.teacherCreateTopic(teacherId, studentIds, { ...data } )
-    if (result?.insertedId !== 1) {
+    if (!result?.insertedId) {
       return res.status(StatusCodes.BAD_REQUEST).json(result)
     }
     return res.status(StatusCodes.CREATED).json(result)

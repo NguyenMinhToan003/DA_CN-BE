@@ -38,8 +38,38 @@ const getStudentDetail = async (id) => {
 
 const getAllStudent = async (page, limit) => {
   try {
-    console.log('page', page, 'limit', limit)
-    return await studentModel.getAll(+page, +limit)
+    const result = await studentModel.getAll(+page, +limit)
+    return {
+      ...result,
+      message: 'Danh sách sinh viên'
+    }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+const searchStudent = async (key, type, page, limit) => {
+  try {
+    const typeVi = {
+      name: 'trường Tên',
+      email: 'trường Email',
+      studentCode: 'trường Mã sinh viên',
+      CLASS: 'trường Lớp',
+      status: 'trường Trạng thái',
+      all: 'Tất cả trường'
+    }
+    let result = {}
+    if (type === 'all') {
+      result = await studentModel.getAll(+page, +limit)
+    }
+    else {
+      result = await studentModel.search(key, type, +page, +limit)
+    }
+    return {
+      ...result,
+      message: `Tìm kiếm sinh viên theo ${typeVi[type]}`
+    }
   }
   catch (error) {
     throw error
@@ -50,5 +80,6 @@ export const studentService = {
   studentRegisterTopic,
   studentRegisterTeacher,
   getStudentDetail,
-  getAllStudent
+  getAllStudent,
+  searchStudent
 }
