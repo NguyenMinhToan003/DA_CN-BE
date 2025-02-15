@@ -127,32 +127,33 @@ const findStudentsByIds = async (ids) => {
     throw error
   }
 }
-const getStudentsByTeacherId = async (id, page, limit) => {
+
+const getStudentsByTeacherId = async (id, type, key, page, limit) => {
   try {
-    // get students by page and limit
-    const students = await GET_DB()
-      .collection(STUDENT_COLLECTION)
-      .aggregate([
-        { $match: { teacherId: new ObjectId(id) } },
-        {
-          $lookup: {
-            from: topicModel.TOPIC_COLLECTION,
-            localField: 'topicId',
-            foreignField: '_id',
-            as: 'topic'
-          }
-        },
-        {
-          $project: NOSUBMITFIELD
-        },
-        { $skip: (page - 1) * limit },
-        { $limit: limit }
-      ]).toArray()
+    const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
+      {
+        $match: {
+          teacherId: new ObjectId(id),
+          $and: [
+            type === 'all' ? {} : { [type]: { $regex: key, $options: 'i' } }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: topicModel.TOPIC_COLLECTION,
+          localField: 'topicId',
+          foreignField: '_id',
+          as: 'topic'
+        }
+      },
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    ]).toArray()
     const total = Math.ceil(
       await GET_DB().collection(STUDENT_COLLECTION).countDocuments({ teacherId: new ObjectId(id) })
     )
     const totalPage = Math.ceil(total / limit)
-
     return {
       students,
       total,
@@ -237,6 +238,28 @@ const getAll = async(page, limit) => {
   }
 }
 
+const search = async (key, type, page, limit) => {
+  try {
+    const students = await GET_DB().collection(STUDENT_COLLECTION).find(
+      {
+        [type]: { $regex: key, $options: 'i' }
+      },
+      { projection: NOSUBMITFIELD }
+    ).toArray()
+    const total = students.length
+    const totalPage = Math.ceil(total / limit)
+    const result = students.slice((page - 1) * limit, page * limit)
+    return {
+      students: result,
+      total,
+      totalPage
+    }
+  }
+  catch (error) {
+    throw error
+  }
+}
+
 export const studentModel = {
   STUDENT_COLLECTION,
   NOSUBMITFIELD,
@@ -249,5 +272,6 @@ export const studentModel = {
   getStudentsByTeacherId,
   getStudentsByTeacherKey,
   getStudentsByTopicId,
-  getAll
+  getAll,
+  search
 }

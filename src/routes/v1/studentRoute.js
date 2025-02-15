@@ -3,8 +3,10 @@ import { studentValidation } from '../../validations/studentValidation'
 import { studentController } from '../../controllers/studentController'
 const Router = express.Router()
 
-Router.route('/getAll')
+Router.route('/all')
   .get(studentValidation.getAllStudent, studentController.getAllStudent)
+Router.route('/all/search')
+  .get(studentValidation.searchStudent, studentController.searchStudent)
 Router.route('/detail')
   .post(studentValidation.getStudentDetail, studentController.getStudentDetail)
 Router.route('/create-topic')
