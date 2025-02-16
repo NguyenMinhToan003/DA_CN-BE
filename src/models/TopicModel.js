@@ -259,6 +259,7 @@ const createEmptyTopic = async (teacherId, studentId) => {
     throw error
   }
 }
+
 const getDetailTopicById = async (id) => {
   try {
     const topic = await GET_DB().collection(TOPIC_COLLECTION).aggregate([
