@@ -1,17 +1,26 @@
 import express from 'express'
 import { resourceValidation } from '../../validations/resourceValidation'
 import { resourceController } from '../../controllers/resourceController'
-import { uploadMulter } from '../../configs/cloundinary'
+import { uploadMulter } from '../../middle/multer'
+
+
 const Router = express.Router()
 
 Router.route('/upload')
   .post(
-    uploadMulter().any('file', 5),
+    uploadMulter.array('files', 10),
     resourceValidation.uploadResource,
     resourceController.uploadResource
   )
-
 Router.route('/ds-resource')
-  .get(resourceValidation.getDsResource, resourceController.getDsResource)
+  .post(resourceValidation.getDsResource, resourceController.getDsResource)
 
+Router.route('/')
+  .delete(resourceValidation.deleteResource, resourceController.deleteResource)
+
+Router.route('/')
+  .put(
+    uploadMulter.array('files', 10),
+    resourceValidation.editResource,
+    resourceController.editResource)
 export const resourceRoute = Router

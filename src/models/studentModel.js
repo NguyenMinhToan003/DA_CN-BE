@@ -70,9 +70,10 @@ const studentRegisterTeacher = async (id, data) => {
     if (user.status === 1) {
       return { message: 'Đã được giáo viên xác nhận' }
     }
-    const teacher = await GET_DB().collection(teacherModel.TEACHER_COLLECTION).findOne(
-      { _id: new ObjectId(data.teacherId) }
-    )
+    const teacher = await teacherModel.findTeacherById(data.teacherId)
+    // const teacher = await GET_DB().collection(teacherModel.TEACHER_COLLECTION).findOne(
+    //   { _id: new ObjectId(data.teacherId) }
+    // )
     if (!teacher) {
       return { message: 'Giáo viên không tồn tại' }
     }
@@ -179,10 +180,7 @@ const getStudentsByTeacherKey = async (key, teacherId, topic) => {
     if (topic === 1 || topic === 0) {
       filter.topicId = topic === 1 ? { $ne: null } : null
     }
-    // const students = await GET_DB().collection(STUDENT_COLLECTION).find(
-    //   filter,
-    //   { projection: NOSUBMITFIELD }
-    // ).toArray()
+
     const students = await GET_DB().collection(STUDENT_COLLECTION).aggregate([
       { $match: filter },
       {
