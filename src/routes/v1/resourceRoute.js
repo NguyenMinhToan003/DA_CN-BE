@@ -15,11 +15,11 @@ Router.route('/upload')
 Router.route('/ds-resource')
   .post(resourceValidation.getDsResource, resourceController.getDsResource)
 
-Router.route('/')
-  .delete(resourceValidation.deleteResource, resourceController.deleteResource)
+Router.route('/delete')
+  .post(resourceValidation.deleteResource, resourceController.deleteResource)
 
-Router.route('/')
-  .put(
+Router.route('/edit')
+  .post(
     uploadMulter.array('files', 10),
     resourceValidation.editResource,
     resourceController.editResource)

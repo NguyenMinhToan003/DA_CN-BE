@@ -148,6 +148,7 @@ const getStudentsByTeacherId = async (id, type, key, page, limit) => {
           as: 'topic'
         }
       },
+      { $project: NOSUBMITFIELD },
       { $skip: (page - 1) * limit },
       { $limit: limit }
     ]).toArray()
